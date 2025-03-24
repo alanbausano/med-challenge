@@ -12,8 +12,9 @@ import {
   Box,
   Typography,
   InputAdornment,
+  TablePagination,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useClientStore } from "../store/clientStore";
 import useDebounce from "../hooks/useDebounce";
 import { SearchOutlined } from "@mui/icons-material";
@@ -21,14 +22,38 @@ import { CellTable } from "./CellTable";
 import StatusFilter from "./StatusFilter";
 
 const Dashboard = () => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [search, setSearch] = useState("");
   const { filteredClients, setSearchQuery } = useClientStore();
   const [showFilter, setShowFilter] = useState(false);
   const debouncedSearchTerm = useDebounce(search, 300);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setSearchQuery(debouncedSearchTerm);
+    setPage(0);
   }, [debouncedSearchTerm, setSearchQuery]);
+
+  const handleRowClick = (id: number) => {
+    navigate(`/client/${id}`);
+  };
+
+  const handleChangePage = (_event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+
+  const handleShowFilter = () => {
+    setPage(0);
+    setShowFilter(!showFilter);
+  };
 
   return (
     <Box>
@@ -68,10 +93,7 @@ const Dashboard = () => {
             justifyContent: "space-between",
           }}
         >
-          <Button
-            variant="contained"
-            onClick={() => setShowFilter(!showFilter)}
-          >
+          <Button variant="contained" onClick={() => handleShowFilter()}>
             Filter Clients
           </Button>
           <Button variant="contained">+ Add Client</Button>
@@ -84,32 +106,35 @@ const Dashboard = () => {
               <CellTable title={"Medical Status"} />
               <CellTable title={"Case Status"} />
               <CellTable title={"Law firm"} />
-              <CellTable title={"Actions"} />
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredClients.map((client) => (
-              <TableRow key={1}>
-                <TableCell>{client.name}</TableCell>
-                <TableCell>{client.doa}</TableCell>
-                <TableCell>{client.medicalStatus}</TableCell>
-                <TableCell>{client.caseStatus}</TableCell>
-                <TableCell>{client.lawFirm}</TableCell>
-                <TableCell>
-                  <Button
-                    component={Link}
-                    to={`/client/${client.id}`}
-                    variant="contained"
-                    color="primary"
-                  >
-                    View
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {filteredClients
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((client) => (
+                <TableRow
+                  key={client.id}
+                  onClick={() => handleRowClick(client.id)}
+                  sx={{ cursor: "pointer" }}
+                >
+                  <TableCell>{client.name}</TableCell>
+                  <TableCell>{client.doa}</TableCell>
+                  <TableCell>{client.medicalStatus}</TableCell>
+                  <TableCell>{client.caseStatus}</TableCell>
+                  <TableCell>{client.lawFirm}</TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <TablePagination
+        component="div"
+        count={filteredClients.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
       <StatusFilter open={showFilter} onClose={() => setShowFilter(false)} />
     </Box>
   );

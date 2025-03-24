@@ -25,13 +25,9 @@ const StatusFilterModal = ({
     onClose();
   };
 
-  const handleApplyFilter = () => {
-    setSelectedStatus(selectedStatus as string); // Update Zustand store with filter
-  };
-
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Filter by Status</DialogTitle>
+      <DialogTitle>Medical Status</DialogTitle>
       <DialogContent>
         <FormControl fullWidth variant="outlined" sx={{ minWidth: 200, mt: 2 }}>
           <InputLabel>Status</InputLabel>
@@ -44,11 +40,8 @@ const StatusFilterModal = ({
         </FormControl>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">
-          Cancel
-        </Button>
-        <Button onClick={handleApplyFilter} color="primary">
-          Apply
+        <Button onClick={onClose} color="error">
+          Close
         </Button>
       </DialogActions>
     </Dialog>

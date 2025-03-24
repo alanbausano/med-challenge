@@ -2,6 +2,8 @@ export interface Client {
   id: number;
   name: string;
   doa: string;
+  dateOfBirth: string;
+  dateOfIncident: string;
   medicalStatus: string;
   caseStatus: string;
   lawFirm: string;
@@ -11,7 +13,7 @@ export interface Expense {
   id: number;
   label: string;
   amount: number;
-  deductedFrom: string;
+  deductedFrom: string | undefined;
 }
 
 export interface ClientStore {
@@ -25,7 +27,7 @@ export interface ClientStore {
   applyFilters: () => void;
   fetchExpenses: (clientId: number) => void;
   addExpense: (clientId: number, expense: Expense) => void;
-  removeExpense: (clientId: number, expenseId: number) => void;
+  removeExpenses: (clientId: number, expenseId: Array<number>) => void;
   addClient: (client: Client) => void;
 }
 

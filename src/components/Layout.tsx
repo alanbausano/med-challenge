@@ -32,8 +32,7 @@ const SideBar = () => (
       <IconButton component={Link} to="/">
         <HomeIcon />
       </IconButton>
-      <IconButton component={Link} to="/client/1">
-        {/* Example client */}
+      <IconButton>
         <AccountCircleIcon />
       </IconButton>
     </Box>

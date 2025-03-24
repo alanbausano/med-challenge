@@ -38,7 +38,7 @@ const customConstants = {
   colors: {
     navbar: "#4a36a1",
     buttons: "#9a8cd5",
-    background: "#88c8d0",
+    background: "#FFF",
   },
 };
 
