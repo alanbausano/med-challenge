@@ -30,9 +30,16 @@ const StatusFilterModal = ({
       <DialogTitle>Medical Status</DialogTitle>
       <DialogContent>
         <FormControl fullWidth variant="outlined" sx={{ minWidth: 200, mt: 2 }}>
-          <InputLabel>Status</InputLabel>
-          <Select value={selectedStatus} onChange={handleChange} label="Status">
-            <MenuItem value="">All</MenuItem>
+          <InputLabel htmlFor="status-select">Status</InputLabel>
+          <Select
+            value={selectedStatus}
+            onChange={handleChange}
+            label="Status"
+            inputProps={{ id: "status-select" }}
+          >
+            <MenuItem value="">
+              <div data-testid="menu-all">All</div>
+            </MenuItem>
             <MenuItem value="Active">Active</MenuItem>
             <MenuItem value="Pending">Pending</MenuItem>
             <MenuItem value="In Progress">In Progress</MenuItem>
