@@ -6,7 +6,7 @@ const mockClients: Client[] = [
     id: 1,
     name: "John Doe",
     doa: "2023-10-10",
-    medicalStatus: "Stable",
+    medicalStatus: "In Progress",
     caseStatus: "Open",
     lawFirm: "Law & Associates",
   },
@@ -14,7 +14,7 @@ const mockClients: Client[] = [
     id: 2,
     name: "Jane Smith",
     doa: "2022-06-15",
-    medicalStatus: "Critical",
+    medicalStatus: "Pending",
     caseStatus: "Pending",
     lawFirm: "Legal Experts",
   },
@@ -22,7 +22,7 @@ const mockClients: Client[] = [
     id: 3,
     name: "Alice Johnson",
     doa: "2024-01-20",
-    medicalStatus: "Recovering",
+    medicalStatus: "Active",
     caseStatus: "Closed",
     lawFirm: "Justice League",
   },
@@ -41,11 +41,40 @@ const mockExpenses: Record<number, Expense[]> = {
   ],
 };
 
-export const useClientStore = create<ClientStore>((set) => ({
-  clients: mockClients,
+export const useClientStore = create<ClientStore>((set, get) => ({
   expenses: mockExpenses,
-  fetchClients: () => {},
-  fetchExpenses: (clientId) => {},
+  clients: mockClients,
+  filteredClients: mockClients,
+  searchQuery: "",
+  selectedStatus: "",
+
+  setSearchQuery: (query: any) => {
+    set({ searchQuery: query });
+    get().applyFilters();
+  },
+
+  setSelectedStatus: (status) => {
+    set({ selectedStatus: status });
+    get().applyFilters();
+  },
+
+  applyFilters: () => {
+    const { clients, searchQuery, selectedStatus } = get();
+
+    const filtered = clients.filter((client) => {
+      const matchesSearch = client.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+
+      const matchesStatus =
+        !selectedStatus || client.medicalStatus === selectedStatus;
+
+      return matchesSearch && matchesStatus;
+    });
+
+    set({ filteredClients: filtered });
+  },
+  fetchExpenses: (_clientId: any) => {},
   addExpense: (clientId, expense) => {
     set((state) => ({
       expenses: {
@@ -65,6 +94,6 @@ export const useClientStore = create<ClientStore>((set) => ({
     }));
   },
   addClient: (client) => {
-    set((state) => ({ clients: [...state.clients, client] }));
+    set((state) => ({ filteredClients: [...state.filteredClients, client] }));
   },
 }));

@@ -15,11 +15,18 @@ export interface Expense {
 }
 
 export interface ClientStore {
-  clients: Client[];
+  filteredClients: Client[];
   expenses: Record<number, Expense[]>;
-  fetchClients: () => void;
+  clients: Client[];
+  searchQuery: string;
+  selectedStatus: string;
+  setSearchQuery: (query: string) => void;
+  setSelectedStatus: (status: string) => void;
+  applyFilters: () => void;
   fetchExpenses: (clientId: number) => void;
   addExpense: (clientId: number, expense: Expense) => void;
   removeExpense: (clientId: number, expenseId: number) => void;
   addClient: (client: Client) => void;
 }
+
+export type MedicalStatus = "Active" | "Pending" | "In Progress" | undefined;

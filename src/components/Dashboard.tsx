@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -10,36 +10,81 @@ import {
   TextField,
   Button,
   Box,
+  Typography,
+  InputAdornment,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useClientStore } from "../store/clientStore";
+import useDebounce from "../hooks/useDebounce";
+import { SearchOutlined } from "@mui/icons-material";
+import { CellTable } from "./CellTable";
+import StatusFilter from "./StatusFilter";
 
 const Dashboard = () => {
-  const { clients } = useClientStore();
   const [search, setSearch] = useState("");
+  const { filteredClients, setSearchQuery } = useClientStore();
+  const [showFilter, setShowFilter] = useState(false);
+  const debouncedSearchTerm = useDebounce(search, 300);
 
-  const filteredClients = clients.filter((client) =>
-    client.name.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    setSearchQuery(debouncedSearchTerm);
+  }, [debouncedSearchTerm, setSearchQuery]);
 
   return (
     <Box>
-      <TextField
-        label="Search"
-        variant="outlined"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
       <TableContainer component={Paper}>
+        <Box
+          sx={{
+            display: "flex",
+            padding: "15px",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography variant="h5">Clients</Typography>
+          <TextField
+            variant="outlined"
+            size="small"
+            placeholder="Search clients"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchOutlined />
+                  </InputAdornment>
+                ),
+              },
+            }}
+            sx={{
+              borderRadius: "50%",
+            }}
+          />
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            padding: "15px",
+            justifyContent: "space-between",
+          }}
+        >
+          <Button
+            variant="contained"
+            onClick={() => setShowFilter(!showFilter)}
+          >
+            Filter Clients
+          </Button>
+          <Button variant="contained">+ Add Client</Button>
+        </Box>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>DOA</TableCell>
-              <TableCell>Medical Status</TableCell>
-              <TableCell>Case Status</TableCell>
-              <TableCell>Law Firm</TableCell>
-              <TableCell>Actions</TableCell>
+              <CellTable title={"Name"} />
+              <CellTable title={"DOA"} />
+              <CellTable title={"Medical Status"} />
+              <CellTable title={"Case Status"} />
+              <CellTable title={"Law firm"} />
+              <CellTable title={"Actions"} />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -65,6 +110,7 @@ const Dashboard = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <StatusFilter open={showFilter} onClose={() => setShowFilter(false)} />
     </Box>
   );
 };
